@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block title %}未认证页面 - 我的记账本{% endblock %}
+
+{% block page_content %}
+<div class="pager">
+    该账户还未认证，没收到邮件？<br/>
+    <a href="{{ url_for('auth.resend_confirmation') }}">重新发送</a>
+</div>
+{% endblock %}
