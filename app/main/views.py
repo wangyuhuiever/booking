@@ -19,7 +19,7 @@ def index():
         db.session.add(record)
         return redirect(url_for('main.index'))
     page = request.args.get('page', 1, type=int)
-    pagination = Record.query.filter_by(own=current_user).paginate(
+    pagination = current_user.records.order_by(Record.timestamp.desc()).paginate(
         page, per_page=current_app.config['SHOW_IN_INDEX'],
         error_out=False)
     records = pagination.items

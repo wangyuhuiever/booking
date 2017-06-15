@@ -13,7 +13,7 @@
             {{ record.message }}
         </td>
         <td>
-            {{ moment(record.timestamp).format('L') }}
+            {{ moment(record.timestamp).format('LLLL') }}
         </td>
         {% if record.own == current_user %}
         <td>

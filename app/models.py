@@ -87,7 +87,7 @@ class Record(db.Model):
     message = db.Column(db.String, index=True, nullable=True)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
     own_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    leixing = db.Column(db.String)
+    leixing = db.Column(db.String, nullable=False, index=True)
 
     def __repr__(self):
         return '<Record %s>' %self.timestamp
