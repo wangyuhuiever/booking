@@ -30,6 +30,7 @@ def confirm(token):
         return redirect(url_for('main.index'))
     if current_user.confirm(token):
         flash('验证通过')
+        return redirect(url_for('main.index'))
     else:
         flash("验证失败")
         return redirect(url_for('.unconfirmed'))
@@ -62,6 +63,8 @@ def before_request():
 
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
+    if current_user.is_authenticated:
+        return redirect(url_for('main.index'))
     form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
