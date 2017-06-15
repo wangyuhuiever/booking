@@ -67,3 +67,8 @@
 {{ super() }}
 <meta charset="utf-8">
 {% endblock %}
+
+{% block scripts %}
+{{ super() }}
+{{ moment.include_moment() }}
+{% endblock %}

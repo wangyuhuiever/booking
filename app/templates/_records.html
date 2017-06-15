@@ -1,0 +1,25 @@
+<table class="table table-hover">
+    <thead><tr><th>金额</th><th>类型</th><th>备注信息</th>
+        <th>交易时间</th>{% if records[0].own == current_user %}<th>修改</th>{% endif %}</tr></thead>
+    {% for record in records %}
+    <tr>
+        <td>
+            {{ record.number }}
+        </td>
+        <td>
+            {{ record.leixing }}
+        </td>
+        <td>
+            {{ record.message }}
+        </td>
+        <td>
+            {{ moment(record.timestamp).format('L') }}
+        </td>
+        {% if record.own == current_user %}
+        <td>
+            <a href="{{ url_for('main.change', id = record.id) }}">修改数据</a>
+        </td>
+        {% endif %}
+    </tr>
+    {% endfor %}
+</table>

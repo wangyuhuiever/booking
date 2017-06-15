@@ -87,42 +87,7 @@ class Record(db.Model):
     message = db.Column(db.String, index=True, nullable=True)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
     own_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    leixing_id = db.Column(db.Integer, db.ForeignKey('leixings.id'))
-
-    @staticmethod
-    def generate_instance():
-        count = Record.query.count() + 1
-        record = Record(id=count)
-        db.session.add(record)
-        db.session.commit()
-        return record
+    leixing = db.Column(db.String)
 
     def __repr__(self):
         return '<Record %s>' %self.timestamp
-
-class Leixing(db.Model):
-    __tablename__ = 'leixings'
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(64), unique=True)
-    records = db.relationship('Record', backref='leixing', lazy='dynamic')
-    default = db.Column(db.Boolean, index=True, default=False)
-    counts = db.Column(db.Integer)
-
-    @staticmethod
-    def insert_leixings():
-        leixings = {
-            '请选择':(0, True),
-            '支出': (-1, False),
-            '收入': (1, False)
-        }
-        for l in leixings:
-            leixing = Leixing.query.filter_by(name=l).first()
-            if leixing is None:
-                leixing = Leixing(name=l)
-            leixing.counts = leixings[l][0]
-            leixing.default = leixings[l][1]
-            db.session.add(leixing)
-        db.session.commit()
-
-    def __repr__(self):
-        return '<Leixing %r>' % self.name

@@ -1,4 +1,6 @@
 {% extends "base.html" %}
+{% import 'bootstrap/wtf.html' as wtf %}
+{% import "_macros.html" as macros %}
 
 {% block title %}首页 - 我的记账本{% endblock %}
 
@@ -6,7 +8,13 @@
 <div class="page-header">
     <h1>记账本</h1>
 </div>
-<div class="pager">
-    <a href="{{ url_for('main.jizhang') }}">此处应有表</a>
+<div class="col-md-4">
+    {{ wtf.quick_form(form) }}
 </div>
+{% include '_records.html' %}
+{% if pagination %}
+<div class="pagination">
+    {{ macros.pagination_widget(pagination, '.index') }}
+</div>
+{% endif %}
 {% endblock %}

@@ -12,7 +12,7 @@ class Config:
     MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
     BOOKING_MAIL_SUBJECT_PREFIX = '[记账软件]'
     BOOKING_MAIL_SENDER = ('管理员', os.environ.get('MAIL_USERNAME'))
-
+    SHOW_IN_INDEX = 5
 
     @staticmethod
     def init_app(app):
