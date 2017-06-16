@@ -84,10 +84,25 @@ class Record(db.Model):
     __tablename__ = 'records'
     id = db.Column(db.Integer, primary_key=True)
     number = db.Column(db.Integer, index=True)
-    message = db.Column(db.String, index=True, nullable=True)
+    message = db.Column(db.String, index=True)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
     own_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     leixing = db.Column(db.String, nullable=False, index=True)
+    delete = db.Column(db.Boolean, default=False)
+
+    @staticmethod
+    def generate_fake(count=100):
+        from random import seed, randint
+
+        seed()
+        for i in range(count):
+            own = User.query.filter_by(id=1).first()
+            record = Record(number=randint(10,10000),
+                            message='哈哈哈，就是测试'[:randint(0,9)],
+                            leixing='收入',
+                            own=own)
+            db.session.add(record)
+        db.session.commit()
 
     def __repr__(self):
         return '<Record %s>' %self.timestamp

@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}报表 - 我的记账本{% endblock %}
+
+{% block page_content %}
+<div class="page-header">
+    <h1>报表</h1>
+</div>
+<div>
+    <table class="table">
+        <tr><th>支出</th><th>收入</th><th>结余</th></tr>
+        <tr>
+            <td>
+                {{ expenditure }}
+            </td>
+            <td>
+                {{ income }}
+            </td>
+            <td>
+                {{ income - expenditure }}
+            </td>
+        </tr>
+    </table>
+</div>
+{% endblock %}

@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% import "_macros.html" as macros %}
+
+{% block title %}查询 - 我的记账本{% endblock %}
+
+{% block page_content %}
+<div class="page-header">
+    查询类型:{{ leixing }}
+</div>
+{% include '_records.html' %}
+{% if pagination %}
+{{ macros.pagination_widget(pagination, '.leixing', leixing=leixing) }}
+{% endif %}
+{% endblock %}

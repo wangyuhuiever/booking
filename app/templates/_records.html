@@ -1,19 +1,22 @@
 <table class="table table-hover">
     <thead><tr><th>金额</th><th>类型</th><th>备注信息</th>
-        <th>交易时间</th>{% if records[0].own == current_user %}<th>修改</th>{% endif %}</tr></thead>
+        <th>交易日期</th><th>所属阶段</th><th>修改</th></tr></thead>
     {% for record in records %}
     <tr>
         <td>
             {{ record.number }}
         </td>
         <td>
-            {{ record.leixing }}
+            <a href="{{ url_for('main.leixing', leixing=record.leixing) }}">{{ record.leixing }}</a>
         </td>
         <td>
             {{ record.message }}
         </td>
         <td>
-            {{ moment(record.timestamp).format('LLLL') }}
+            {{ moment(record.timestamp).format('Do') }}
+        </td>
+        <td>
+            {{ moment(record.timestamp).format('YYYY年MMM') }}
         </td>
         {% if record.own == current_user %}
         <td>
