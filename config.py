@@ -14,6 +14,7 @@ class Config:
     BOOKING_MAIL_SENDER = ('管理员', os.environ.get('MAIL_USERNAME'))
     SHOW_IN_QUERY = 25
     BOOKING_ADMIN = '729265425@qq.com'
+    SSL_DISABLE = True
 
     @staticmethod
     def init_app(app):
@@ -65,6 +66,11 @@ class HerokuConfig(ProductionConfig):
         file_hander = StreamHandler()
         file_hander.setLevel(logging.WARNING)
         app.logger.addHandler(file_hander)
+
+        from werkzeug.contrib.fixers import ProxyFix
+        app.wsgi_app = ProxyFix(app.wsgi_app)
+
+    SSL_DISABLE = bool(os.environ.get('SSL_DISABLE'))
 
 config = {
     'develop': DevelopmentConfig,
