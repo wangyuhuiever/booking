@@ -16,7 +16,9 @@
             {{ moment(record.timestamp).format('Do') }}
         </td>
         <td>
-            {{ moment(record.timestamp).format('YYYY年MMM') }}
+            <a href="{{ url_for('main.timestamp', timestamp=record.timestamp) }}">
+                 {{ moment(record.timestamp).format('YYYY年MMM') }}
+            </a>
         </td>
         {% if record.own == current_user %}
         <td>

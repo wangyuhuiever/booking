@@ -4,6 +4,7 @@ from flask_login import current_user, login_required
 from .forms import DataForm, ChangeDataForm
 from ..models import Record
 from .. import db
+from datetime import datetime, date, time, timedelta
 
 @main.route('/', methods=['GET', 'POST'])
 @login_required
@@ -59,12 +60,30 @@ def all():
 @login_required
 def leixing(leixing):
     page = request.args.get('page', 1, type=int)
-    pagination = current_user.records.filter_by(leixing=leixing).order_by(Record.timestamp).paginate(
+    pagination = current_user.records.filter_by(leixing=leixing).order_by(Record.id.desc()).paginate(
         page, per_page=current_app.config['SHOW_IN_QUERY'],
         error_out=False)
     records = pagination.items
     return render_template('leixing.html', pagination=pagination, records=records,
                            leixing=leixing)
+
+@main.route('/index/timestamp/<string:timestamp>')
+@login_required
+def timestamp(timestamp):
+    date_min = date(int(timestamp[:4]), int(timestamp[5:7]), 1)
+    date_max = date(int(timestamp[:4]), int(timestamp[5:7])+1, 1) - timedelta(1)
+    time_min = time.min
+    time_max = time.max
+    begin_time = str(datetime.combine(date_min, time_min))
+    end_time = str(datetime.combine(date_max, time_max))
+    page = request.args.get('page', 1, type=int)
+    pagination = current_user.records.filter(begin_time<timestamp<end_time)\
+        .order_by(Record.id.desc()).paginate(
+        page, per_page=current_app.config['SHOW_IN_QUERY'],
+        error_out=False)
+    records = pagination.items
+    return render_template('timestamp.html', pagination=pagination, records=records,
+                           leixing='月份', timestamp=timestamp)
 
 @main.route('/report')
 @login_required
