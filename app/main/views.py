@@ -93,7 +93,7 @@ def report():
     income = 0
     expenditure = 0
     for record in records:
-        if record.leixing == '支出':
+        if record.leixing == 'out':
             expenditure += record.number
         else:
             income += record.number

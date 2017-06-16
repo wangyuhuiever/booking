@@ -5,13 +5,13 @@ from wtforms.validators import Required, Length
 
 class DataForm(FlaskForm):
     number = StringField("金额", validators=[Required(), Length(0, 8)])
-    leixing = SelectField("借贷", choices=[(None, '请选择'), ('支出', '支出'), ('收入', '收入')])
+    leixing = SelectField("借贷", choices=[(None, '请选择'), ('out', '支出'), ('in', '收入')])
     message = StringField("备注")
     submit = SubmitField("记账")
 
 class ChangeDataForm(FlaskForm):
     number = StringField("金额", validators=[Required(), Length(0, 8)])
-    leixing = SelectField("借贷", choices=[(None, '请选择'), ('支出', '支出'), ('收入', '收入')])
+    leixing = SelectField("借贷", choices=[(None, '请选择'), ('out', '支出'), ('in', '收入')])
     message = StringField("备注")
     delete = BooleanField("删除")
     submit = SubmitField("确认")
