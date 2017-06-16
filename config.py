@@ -15,7 +15,7 @@ class Config:
     BOOKING_MAIL_SENDER = ('管理员', os.environ.get('MAIL_USERNAME'))
     SHOW_IN_QUERY = 25
     BOOKING_ADMIN = '729265425@qq.com'
-    SSL_DISABLE = True
+    SSL_DISABLE = False
 
     @staticmethod
     def init_app(app):
