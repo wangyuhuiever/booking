@@ -14,5 +14,11 @@ def make_context_shell():
 manage.add_command('shell', Shell(make_context=make_context_shell))
 manage.add_command('db', MigrateCommand)
 
+@manage.command
+def deploy():
+    from flask_migrate import upgrade
+
+    upgrade()
+
 if __name__ == '__main__':
     manage.run()
