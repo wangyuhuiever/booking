@@ -1,4 +1,3 @@
-#! -*- encoding:utf-8 -*-
 from . import main
 from flask import render_template, redirect, url_for, request, current_app
 from flask_login import current_user, login_required
@@ -93,7 +92,7 @@ def report():
     income = 0
     expenditure = 0
     for record in records:
-        if record.leixing == 'out':
+        if record.leixing == '支出':
             expenditure += record.number
         else:
             income += record.number

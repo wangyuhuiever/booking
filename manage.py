@@ -1,8 +1,16 @@
 import os
+from imp import reload
+
 from app import create_app, db
 from flask_script import Manager, Shell
 from app.models import User, Record
 from flask_migrate import MigrateCommand, Migrate
+import sys
+
+defaultencoding = 'utf-8'
+if sys.getdefaultencoding() != defaultencoding:
+    reload(sys)
+    sys.setdefaultencoding(defaultencoding)
 
 app = create_app(os.getenv('BOOKING_CONFIG') or 'default')
 manage = Manager(app)
