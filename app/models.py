@@ -1,7 +1,7 @@
 #! -*- encoding:utf-8 -*-
 from . import db, login_manager
 from werkzeug.security import generate_password_hash, check_password_hash
-from datetime import datetime
+from datetime import date
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from flask import current_app, request
 from flask_login import UserMixin, AnonymousUserMixin
@@ -76,7 +76,7 @@ class User(UserMixin, db.Model):
             self.avatar_hash = hashlib.md5(self.email.encode('utf-8')).hexdigest()
 
     def __repr__(self):
-        return '<User %r>' % self.username
+        return '<User %s>' % self.username
 
 @login_manager.user_loader
 def lode_user(user_id):
@@ -89,26 +89,54 @@ login_manager.anonymous_user = AnonymousUser
 class Record(db.Model):
     __tablename__ = 'records'
     id = db.Column(db.Integer, primary_key=True)
+    timestamp = db.Column(db.Date, index=True)
     number = db.Column(db.Integer, index=True)
     message = db.Column(db.String, index=True)
-    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
-    own_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    money = db.Column(db.Integer, index=True)
     leixing = db.Column(db.String, nullable=False, index=True)
+    outlay_id = db.Column(db.Integer, db.ForeignKey('outlays.id'))
+    own_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     delete = db.Column(db.Boolean, default=False)
 
-    @staticmethod
-    def generate_fake(count=100):
-        from random import seed, randint
-
-        seed()
-        for i in range(count):
-            own = User.query.filter_by(id=1).first()
-            record = Record(number=randint(10,10000),
-                            message='哈哈哈，就是测试'[:randint(0,9)],
-                            leixing='收入',
-                            own=own)
-            db.session.add(record)
-        db.session.commit()
+    def __init__(self, **kwargs):
+        super(Record, self).__init__(**kwargs)
+        if self.outlay is None:
+            self.outlay == Outlay.query.filter_by(default=True).first()
 
     def __repr__(self):
         return '<Record %s>' %self.timestamp
+
+class Outlay(db.Model):
+    __tablename__ = 'outlays'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String, unique=True, index=True)
+    default = db.Column(db.Boolean, default=False, index=True)
+    records = db.relationship('Record', backref='outlay', lazy='dynamic')
+
+    @staticmethod
+    def insert_outlays():
+        outlays = {
+            '请选择': ((None,), True),
+            '管理费用':(('办公费', '招待费', '人员工资',
+                     '修理费', '奖金', '水电费'), False),
+            '活动业务成本':(('房租', '教师工资', '宣传费'), False),
+            '税金':(('所得税', '增值税', '企业所得税', '印花税',
+                   '城建税'), False)
+        }
+        for o1 in outlays:
+            for o2 in outlays[o1][0]:
+                if o2 is None:
+                    outlay = Outlay.query.filter_by(name=o1).first()
+                else:
+                    outlay = Outlay.query.filter_by(name=o1 + '--' + o2).first()
+                if outlay is None:
+                    if o2 is None:
+                        outlay = Outlay(name=o1)
+                    else:
+                        outlay = Outlay(name=o1 + '--' + o2)
+                outlay.default = outlays[o1][1]
+                db.session.add(outlay)
+        db.session.commit()
+
+    def __repr__(self):
+        return '<Outlay %s>' % self.name

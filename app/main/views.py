@@ -2,10 +2,10 @@
 from . import main
 from flask import render_template, redirect, url_for, request, current_app
 from flask_login import current_user, login_required
-from .forms import DataForm, ChangeDataForm
-from ..models import Record
+from .forms import DataForm, ModifyDataForm
+from ..models import Record, Outlay
 from .. import db
-from datetime import datetime, date, time, timedelta
+from datetime import date, timedelta
 
 @main.route('/', methods=['GET', 'POST'])
 @login_required
@@ -14,9 +14,12 @@ def index():
         return redirect(url_for('auth.unconfirmed'))
     form = DataForm()
     if form.validate_on_submit():
-        record = Record(number=form.number.data,
-                        leixing=form.leixing.data,
+        record = Record(timestamp=form.timestamp.data,
+                        number=form.number.data,
                         message=form.message.data,
+                        money=form.money.data,
+                        leixing=form.leixing.data,
+                        outlay=Outlay.query.get(form.outlay.data),
                         own=current_user._get_current_object())
         db.session.add(record)
         return redirect(url_for('main.index'))
@@ -25,26 +28,32 @@ def index():
     return render_template('index.html', form=form, records=records[:5],
                            counts=counts)
 
-@main.route('/change/<int:id>', methods=['GET', 'POST'])
+@main.route('/modify/<int:id>', methods=['GET', 'POST'])
 @login_required
-def change(id):
+def modify(id):
     record = Record.query.get_or_404(id)
-    form = ChangeDataForm(record)
+    form = ModifyDataForm(record)
     if form.validate_on_submit():
-        record.number=form.number.data
-        record.leixing=form.leixing.data
-        record.message=form.message.data
-        record.delete=form.delete.data
+        record.timestamp = form.timestamp.data
+        record.number = form.number.data
+        record.message = form.message.data
+        record.money = form.money.data
+        record.leixing = form.leixing.data
+        record.outlay = Outlay.query.get(form.outlay.data)
+        record.delete = form.delete.data
         if record.delete == True:
             db.session.delete(record)
         else:
             db.session.add(record)
         return redirect(url_for('main.index'))
+    form.timestamp.data = record.timestamp
     form.number.data = record.number
-    form.leixing.data = record.leixing
     form.message.data = record.message
+    form.money.data = record.money
+    form.leixing.data = record.leixing
+    form.outlay.data = record.outlay
     form.delete.data = record.delete
-    return render_template('change.html', form=form, record=record)
+    return render_template('modify.html', form=form, record=record)
 
 @main.route('/all')
 @login_required
@@ -71,12 +80,8 @@ def leixing(leixing):
 @main.route('/index/timestamp/<string:timestamp>')
 @login_required
 def timestamp(timestamp):
-    date_min = date(int(timestamp[:4]), int(timestamp[5:7]), 1)
-    date_max = date(int(timestamp[:4]), int(timestamp[5:7])+1, 1) - timedelta(1)
-    time_min = time.min
-    time_max = time.max
-    begin_time = str(datetime.combine(date_min, time_min))
-    end_time = str(datetime.combine(date_max, time_max))
+    begin_time = date(int(timestamp[:4]), int(timestamp[5:7]), 1)
+    end_time = date(int(timestamp[:4]), int(timestamp[5:7])+1, 1) - timedelta(1)
     page = request.args.get('page', 1, type=int)
     pagination = current_user.records.filter(begin_time<timestamp<end_time)\
         .order_by(Record.id.desc()).paginate(
