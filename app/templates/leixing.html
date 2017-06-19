@@ -9,6 +9,6 @@
 </div>
 {% include '_records.html' %}
 {% if pagination %}
-{{ macros.pagination_widget(pagination, '.leixing', leixing=leixing) }}
+{{ macros.pagination_widget(pagination, '.leixing', leixing=records.leixing, timestamp=records.timestamp) }}
 {% endif %}
 {% endblock %}

@@ -105,11 +105,14 @@ def all():
     return render_template('all.html', pagination=pagination,
                            records=records)
 
-@main.route('/index/leixing/<string:leixing>')
+@main.route('/index/leixing/<string:leixing>/<string:timestamp>')
 @login_required
-def leixing(leixing):
+def leixing(leixing, timestamp):
+    begin_time = date(int(timestamp[:4]), int(timestamp[5:7]), 1)
+    end_time = date(int(timestamp[:4]), int(timestamp[5:7]) + 1, 1) - timedelta(1)
     page = request.args.get('page', 1, type=int)
-    pagination = current_user.records.filter_by(leixing=leixing).order_by(Record.id.desc()).paginate(
+    pagination = current_user.records.filter_by(leixing=leixing).\
+        filter(Record.timestamp.between(begin_time, end_time)).order_by(Record.id.desc()).paginate(
         page, per_page=current_app.config['SHOW_IN_QUERY'],
         error_out=False)
     records = pagination.items
@@ -119,40 +122,45 @@ def leixing(leixing):
 @main.route('/index/timestamp/<string:timestamp>')
 @login_required
 def timestamp(timestamp):
-    begin_time = str(date(int(timestamp[:4]), int(timestamp[5:7]), 1))
-    end_time = str(date(int(timestamp[:4]), int(timestamp[5:7])+1, 1) - timedelta(1))
+    begin_time = date(int(timestamp[:4]), int(timestamp[5:7]), 1)
+    end_time = date(int(timestamp[:4]), int(timestamp[5:7])+1, 1) - timedelta(1)
     page = request.args.get('page', 1, type=int)
-    pagination = current_user.records.filter(begin_time<timestamp<end_time)\
+    pagination = current_user.records.filter(Record.timestamp.between(begin_time, end_time))\
         .order_by(Record.id.desc()).paginate(
         page, per_page=current_app.config['SHOW_IN_QUERY'],
         error_out=False)
     records = pagination.items
     return render_template('timestamp.html', pagination=pagination, records=records,
-                           leixing='月份', timestamp=timestamp)
+                           leixing='月份')
 
-@main.route('/index/outlay/<string:outlay>')
+@main.route('/index/outlay/<string:outlay>/<string:timestamp>')
 @login_required
-def outlay(outlay):
+def outlay(outlay, timestamp):
     yiji = outlay[:outlay.find('--')]
     kemu = Outlay.query.filter(Outlay.name.startswith(yiji)).all()
+    begin_time = date(int(timestamp[:4]), int(timestamp[5:7]), 1)
+    end_time = date(int(timestamp[:4]), int(timestamp[5:7]) + 1, 1) - timedelta(1)
     records = []
     for i in kemu:
-        record = current_user.records.filter(Record.outlay_id.contains(i.id)).order_by(Record.id.desc()).all()
+        record = current_user.records.filter(Record.outlay_id.contains(i.id)).\
+            filter(Record.timestamp.between(begin_time, end_time)).order_by(Record.id.desc()).all()
         records.extend(record)
     return render_template('outlay.html', records=records,
-                           leixing='科目', outlay=outlay)
+                           leixing='科目')
 
-@main.route('/index/fulloutlay/<string:outlay>')
+@main.route('/index/fulloutlay/<string:outlay>/<string:timestamp>')
 @login_required
-def fulloutlay(outlay):
+def fulloutlay(outlay, timestamp):
+    begin_time = date(int(timestamp[:4]), int(timestamp[5:7]), 1)
+    end_time = date(int(timestamp[:4]), int(timestamp[5:7]) + 1, 1) - timedelta(1)
     page = request.args.get('page', 1, type=int)
     pagination = current_user.records.filter(Record.outlay_id==outlay) \
-        .order_by(Record.id.desc()).paginate(
+        .filter(Record.timestamp.between(begin_time, end_time)).order_by(Record.id.desc()).paginate(
         page, per_page=current_app.config['SHOW_IN_QUERY'],
         error_out=False)
     records = pagination.items
     return render_template('outlay.html', pagination=pagination, records=records,
-                           leixing='二级科目', outlay=outlay)
+                           leixing='二级科目')
 
 @main.route('/report')
 @login_required

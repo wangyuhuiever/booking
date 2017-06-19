@@ -9,6 +9,6 @@
 </div>
 {% include '_records.html' %}
 {% if pagination %}
-{{ macros.pagination_widget(pagination, '.timestamp', timestamp=timestamp) }}
+{{ macros.pagination_widget(pagination, '.timestamp', timestamp=records.timestamp) }}
 {% endif %}
 {% endblock %}

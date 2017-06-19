@@ -18,16 +18,16 @@
             {{ record.money }}
         </td>
         <td>
-            <a href="{{ url_for('main.leixing', leixing=record.leixing) }}">
+            <a href="{{ url_for('main.leixing', leixing=record.leixing, timestamp=record.timestamp) }}">
                 {{ record.leixing }}
             </a>
         </td>
         <td>
-            <a href="{{ url_for('main.outlay', outlay=record.outlay.name) }}">
+            <a href="{{ url_for('main.outlay', outlay=record.outlay.name, timestamp=record.timestamp) }}">
                 {{ record.outlay.name[:record.outlay.name.find('--')] }}
             </a>
             --
-            <a href="{{ url_for('main.fulloutlay', outlay=record.outlay.id) }}">
+            <a href="{{ url_for('main.fulloutlay', outlay=record.outlay.id, timestamp=record.timestamp) }}">
                 {{ record.outlay.name[record.outlay.name.find('--') + 2:] }}
             </a>
         </td>
