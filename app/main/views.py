@@ -130,7 +130,29 @@ def timestamp(timestamp):
     return render_template('timestamp.html', pagination=pagination, records=records,
                            leixing='月份', timestamp=timestamp)
 
+@main.route('/index/outlay/<string:outlay>')
+@login_required
+def outlay(outlay):
+    yiji = outlay[:outlay.find('--')]
+    kemu = Outlay.query.filter(Outlay.name.startswith(yiji)).all()
+    records = []
+    for i in kemu:
+        record = current_user.records.filter(Record.outlay_id.contains(i.id)).order_by(Record.id.desc()).all()
+        records.extend(record)
+    return render_template('outlay.html', records=records,
+                           leixing='科目', outlay=outlay)
 
+@main.route('/index/fulloutlay/<string:outlay>')
+@login_required
+def fulloutlay(outlay):
+    page = request.args.get('page', 1, type=int)
+    pagination = current_user.records.filter(Record.outlay_id==outlay) \
+        .order_by(Record.id.desc()).paginate(
+        page, per_page=current_app.config['SHOW_IN_QUERY'],
+        error_out=False)
+    records = pagination.items
+    return render_template('outlay.html', pagination=pagination, records=records,
+                           leixing='二级科目', outlay=outlay)
 
 @main.route('/report')
 @login_required

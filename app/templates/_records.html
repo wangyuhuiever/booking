@@ -23,7 +23,13 @@
             </a>
         </td>
         <td>
-            {{ record.outlay.name }}
+            <a href="{{ url_for('main.outlay', outlay=record.outlay.name) }}">
+                {{ record.outlay.name[:record.outlay.name.find('--')] }}
+            </a>
+            --
+            <a href="{{ url_for('main.fulloutlay', outlay=record.outlay.id) }}">
+                {{ record.outlay.name[record.outlay.name.find('--') + 2:] }}
+            </a>
         </td>
         {% if record.own == current_user %}
         <td>
