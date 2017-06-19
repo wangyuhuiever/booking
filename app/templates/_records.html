@@ -4,7 +4,9 @@
     {% for record in records %}
     <tr>
         <td>
-            {{ record.timestamp }}
+            <a href="{{ url_for('main.timestamp', timestamp=record.timestamp) }}">
+                {{ record.timestamp }}
+            </a>
         </td>
         <td>
             {{ record.number }}
@@ -16,7 +18,9 @@
             {{ record.money }}
         </td>
         <td>
-            {{ record.leixing }}
+            <a href="{{ url_for('main.leixing', leixing=record.leixing) }}">
+                {{ record.leixing }}
+            </a>
         </td>
         <td>
             {{ record.outlay.name }}

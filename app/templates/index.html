@@ -10,6 +10,8 @@
 <div class="col-md-4">
     {{ wtf.quick_form(form) }}
 </div>
+没找到科目？<a href="{{ url_for('main.addoutlay') }}">添加</a>
+删除科目？<a href="{{ url_for('main.deleteoutlay') }}">删除</a>
 <form>
 {% include '_records.html' %}
 首页只显示最近5条数据，共有<a href="{{ url_for('main.all') }}">{{ counts }}</a>条数据。

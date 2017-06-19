@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %}删除科目 - 我的记账本{% endblock %}
+
+{% block page_content %}
+<div class="page-header">
+    <h1>删除科目</h1>
+</div>
+<table border="1">
+    <tr><th>科目列表</th></tr>
+    <tr>
+        <td>
+    {% for outlay in outlay_list %}
+        {{ outlay }}<br/>
+    {% endfor %}
+        </td>
+    </tr>
+</table>
+<div class="col-md-4">
+    {{ wtf.quick_form(form) }}
+</div>
+{% endblock %}

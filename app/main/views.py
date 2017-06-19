@@ -1,8 +1,8 @@
 #! -*- encoding:utf-8 -*-
 from . import main
-from flask import render_template, redirect, url_for, request, current_app
+from flask import render_template, redirect, url_for, request, current_app, flash
 from flask_login import current_user, login_required
-from .forms import DataForm, ModifyDataForm
+from .forms import DataForm, ModifyDataForm, AddOutlayForm
 from ..models import Record, Outlay
 from .. import db
 from datetime import date, timedelta
@@ -55,6 +55,45 @@ def modify(id):
     form.delete.data = record.delete
     return render_template('modify.html', form=form, record=record)
 
+@main.route('/addoutlay', methods=['GET', 'POST'])
+@login_required
+def addoutlay():
+    form = AddOutlayForm()
+    outlays = Outlay.query.all()
+    outlay_list = []
+    for outlay in outlays:
+        outlay_list.append(outlay.name)
+    if form.validate_on_submit():
+        addname = form.name1.data + '--' + form.name2.data
+        if addname in outlay_list:
+            flash('该科目已存在')
+        else:
+            o = Outlay(name=addname)
+            db.session.add(o)
+            flash('添加成功')
+        return redirect(url_for('main.addoutlay'))
+    return render_template('addoutlay.html', form=form, outlay_list=outlay_list)
+
+@main.route('/deleteoutlay', methods=['GET', 'POST'])
+@login_required
+def deleteoutlay():
+    outlays = Outlay.query.order_by(Outlay.name.asc())
+    outlay_list = []
+    for outlay in outlays:
+        if outlay.id != 1:
+            outlay_list.append(outlay.name)
+    form = AddOutlayForm()
+    if form.validate_on_submit():
+        deletename = form.name1.data + '--' + form.name2.data
+        o = Outlay.query.filter_by(name=deletename).first()
+        if deletename in outlay_list:
+            db.session.delete(o)
+            flash('删除成功')
+        else:
+            flash('没有此科目')
+        return redirect(url_for('main.deleteoutlay'))
+    return render_template('deleteoutlay.html', form=form, outlay_list=outlay_list)
+
 @main.route('/all')
 @login_required
 def all():
@@ -80,8 +119,8 @@ def leixing(leixing):
 @main.route('/index/timestamp/<string:timestamp>')
 @login_required
 def timestamp(timestamp):
-    begin_time = date(int(timestamp[:4]), int(timestamp[5:7]), 1)
-    end_time = date(int(timestamp[:4]), int(timestamp[5:7])+1, 1) - timedelta(1)
+    begin_time = str(date(int(timestamp[:4]), int(timestamp[5:7]), 1))
+    end_time = str(date(int(timestamp[:4]), int(timestamp[5:7])+1, 1) - timedelta(1))
     page = request.args.get('page', 1, type=int)
     pagination = current_user.records.filter(begin_time<timestamp<end_time)\
         .order_by(Record.id.desc()).paginate(
@@ -90,6 +129,8 @@ def timestamp(timestamp):
     records = pagination.items
     return render_template('timestamp.html', pagination=pagination, records=records,
                            leixing='月份', timestamp=timestamp)
+
+
 
 @main.route('/report')
 @login_required
