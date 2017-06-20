@@ -137,7 +137,6 @@ def timestamp(timestamp):
 @login_required
 def outlay(outlay, timestamp):
     yiji = outlay[:outlay.find('--')]
-    kemu = Outlay.query.filter(Outlay.name.startswith(yiji)).all()
     begin_time = date(int(timestamp[:4]), int(timestamp[5:7]), 1)
     end_time = date(int(timestamp[:4]), int(timestamp[5:7]) + 1, 1) - timedelta(1)
     page = request.args.get('page', 1, type=int)
