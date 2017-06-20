@@ -101,7 +101,7 @@ class Record(db.Model):
     def __init__(self, **kwargs):
         super(Record, self).__init__(**kwargs)
         if self.outlay is None:
-            self.outlay == Outlay.query.filter_by(default=True).first()
+            self.outlay = Outlay.query.filter_by(default=True).first()
 
     def __repr__(self):
         return '<Record %s>' %self.timestamp
