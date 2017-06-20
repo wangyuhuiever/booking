@@ -32,7 +32,7 @@ class ModifyDataForm(FlaskForm):
     money = StringField("金额", validators=[Required(), Length(0, 8, '最大位数为8'), Regexp('^[1-9][0-9]*$', 0,
                                                                                       '金额必须为正整数')])
     leixing = SelectField("借贷", choices=[(None, '请选择'), ('支出', '支出'), ('收入', '收入')])
-    outlay = SelectField("支出类型", coerce=int, default=True)
+    outlay = SelectField("支出类型", coerce=int, default='请选择')
     delete = BooleanField("删除")
     submit = SubmitField("记账")
 
@@ -43,7 +43,7 @@ class ModifyDataForm(FlaskForm):
         self.record = record
 
     def validate_outlay(self, field):
-        if field.data == 1:
+        if field.data == 15:
             raise ValidationError('请选择科目')
 
 class AddOutlayForm(FlaskForm):
