@@ -140,12 +140,13 @@ def outlay(outlay, timestamp):
     kemu = Outlay.query.filter(Outlay.name.startswith(yiji)).all()
     begin_time = date(int(timestamp[:4]), int(timestamp[5:7]), 1)
     end_time = date(int(timestamp[:4]), int(timestamp[5:7]) + 1, 1) - timedelta(1)
-    records = []
-    for i in kemu:
-        record = current_user.records.filter(Record.outlay_id.contains(i.id)).\
-            filter(Record.timestamp.between(begin_time, end_time)).order_by(Record.id.desc()).all()
-        records.extend(record)
-    return render_template('outlay.html', records=records,
+    page = request.args.get('page', 1, type=int)
+    pagination = current_user.records.join(Outlay, Outlay.name.startswith(yiji)). \
+        filter(Record.timestamp.between(begin_time, end_time)).order_by(Record.id.desc()).paginate(
+        page, per_page=current_app.config['SHOW_IN_QUERY'],
+        error_out=False)
+    records = pagination.items
+    return render_template('outlay.html', records=records, pagination=pagination,
                            leixing='科目')
 
 @main.route('/index/fulloutlay/<string:outlay>/<string:timestamp>')
